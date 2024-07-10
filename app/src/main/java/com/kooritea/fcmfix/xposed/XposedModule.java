@@ -117,7 +117,7 @@ public abstract class XposedModule {
             try {
                 onUpdateConfig();
             } catch (Exception e) {
-                printLog("更新配置文件失败: " + e.getMessage());
+                printLog("Update configuration file failed: " + e.getMessage());
             }
         }
     }
@@ -176,7 +176,7 @@ public abstract class XposedModule {
                             return;
                         }
                     }catch (Exception e){
-                        printLog("直接读取应用配置失败，将唤醒fcmfix本体进行读取: " + e.getMessage());
+                        printLog("If app configuration cannot be read directly, fcmfix will be awakened for reading: " + e.getMessage());
                     }
                     try{
                         ContentProviderHelper contentProviderHelper = new ContentProviderHelper(context,"content://com.kooritea.fcmfix.provider/config");
@@ -187,7 +187,7 @@ public abstract class XposedModule {
                         disableAutoCleanNotification = contentProviderHelper.getBoolean("disableAutoCleanNotification", false);
                         contentProviderHelper.close();
                     }catch (Exception e){
-                        printLog("唤醒fcmfix应用读取配置失败: " + e.getMessage());
+                        printLog("Wake up fcmfix to read the configuration failed: " + e.getMessage());
                     }
                     loadConfigThread = null;
                 }
@@ -244,7 +244,7 @@ public abstract class XposedModule {
                         }
                         onUninstallFcmfix();
                         if("android".equals(context.getPackageName())){
-                            printLog("Fcmfix已卸载，重启后停止生效。");
+                            printLog("fcmfix uninstalled and will no longer take effect after reboot.");
                         }
                     }
                 }

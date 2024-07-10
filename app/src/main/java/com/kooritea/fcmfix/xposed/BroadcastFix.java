@@ -37,7 +37,7 @@ public class BroadcastFix extends XposedModule {
         }
         if(targetMethod != null){
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
-                printLog("不支持的安卓版本(<10)，fcmfix将不会工作。");
+                printLog("Unsupported Android versions (<10), fcmfix will not work.");
                 return;
             }
             int intent_args_index = 0;
@@ -97,7 +97,7 @@ public class BroadcastFix extends XposedModule {
                 if(parameters[3].getType() == Intent.class && parameters[12].getType() == int.class){
                     intent_args_index = 3;
                     appOp_args_index = 12;
-                    printLog("未适配的安卓版本，正在使用最后一个适配的安卓版本的配置，可能会出现工作异常。");
+                    printLog("Unsupported Android version is using configuration, which may cause abnormal operation.");
                 }
             }
             if(intent_args_index == 0 || appOp_args_index == 0){
@@ -111,7 +111,7 @@ public class BroadcastFix extends XposedModule {
                     // 唯一一个Intent参数的位置
                     if(parameters[i].getType() == Intent.class){
                         if(intent_args_index != 0){
-                            printLog("查找到多个Intent，停止查找hook位置。");
+                            printLog("Multiple Intents are found, stop searching for hook locations.");
                             intent_args_index = 0;
                             break;
                         }
@@ -119,14 +119,14 @@ public class BroadcastFix extends XposedModule {
                     }
                 }
                 if(intent_args_index != 0 && appOp_args_index != 0){
-                    printLog("当前hook位置通过模糊查找得出，fcmfix可能不会正常工作。");
+                    printLog("Current hook position is obtained through fuzzy search, fcmfix may not work properly.");
                 }
             }
             printLog("Android API: " + Build.VERSION.SDK_INT);
             printLog("appOp_args_index: " + appOp_args_index);
             printLog("intent_args_index: " + intent_args_index);
             if(intent_args_index == 0 || appOp_args_index == 0){
-                printLog("broadcastIntentLocked hook 位置查找失败，fcmfix将不会工作。");
+                printLog("broadcastIntentLocked hook location lookup fails, fcmfix will not work.");
                 return;
             }
             final int finalIntent_args_index = intent_args_index;

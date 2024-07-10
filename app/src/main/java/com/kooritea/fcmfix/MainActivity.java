@@ -254,21 +254,21 @@ public class MainActivity extends AppCompatActivity {
             this.sendBroadcast(new Intent("com.kooritea.fcmfix.update.config"));
         } catch (IOException | JSONException e) {
             e.printStackTrace();
-            new AlertDialog.Builder(this).setTitle("更新配置文件失败").setMessage(e.getMessage()).show();
+            new AlertDialog.Builder(this).setTitle("Failed to update configuration file").setMessage(e.getMessage()).show();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu){
-        MenuItem isShowLauncherIconMenuItem = menu.add("隐藏启动器图标");
+        MenuItem isShowLauncherIconMenuItem = menu.add("Hide fcmfix app icon");
         isShowLauncherIconMenuItem.setCheckable(true);
 
-        MenuItem disableAutoCleanNotificationMenuItem = menu.add("阻止应用停止时自动清除通知");
+        MenuItem disableAutoCleanNotificationMenuItem = menu.add("Prevent clean notifications");
         disableAutoCleanNotificationMenuItem.setCheckable(true);
 
-        menu.add("全选包含 FCM 的应用");
+        menu.add("Select all apps with FCM");
 
-        menu.add("打开FCM Diagnostics");
+        menu.add("Open FCM diagnostics");
         return true;
     }
 
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public final boolean onOptionsItemSelected(MenuItem menuItem) {
-        if(menuItem.getTitle().equals("隐藏启动器图标")){
+        if(menuItem.getTitle().equals("Hide fcmfix app icon")){
             PackageManager packageManager = getPackageManager();
             packageManager.setComponentEnabledSetting(
                     new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home"),
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                     PackageManager.DONT_KILL_APP
             );
         }
-        if(menuItem.getTitle().equals("阻止应用停止时自动清除通知")){
+        if(menuItem.getTitle().equals("Prevent clean notifications")){
             try {
                 this.config.put("disableAutoCleanNotification", !menuItem.isChecked());
                 this.updateConfig();

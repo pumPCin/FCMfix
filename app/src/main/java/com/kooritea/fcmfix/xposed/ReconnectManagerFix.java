@@ -96,7 +96,7 @@ public class ReconnectManagerFix extends XposedModule {
         String versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         long versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).getLongVersionCode();
         if(versionCode < 213916046){
-            printLog("当前为旧版GMS，请使用0.4.1版本FCMFIX，禁用重连修复功能");
+            printLog("Old version of GMS. Please use fcmfix version 0.4.1 and disable the reconnection repair function.");
             return;
         }
         if (!sharedPreferences.getBoolean("isInit", false) || !sharedPreferences.getString("config_version", "").equals(configVersion)) {
@@ -113,23 +113,23 @@ public class ReconnectManagerFix extends XposedModule {
             editor.putString("timer_settimeout_method", "");
             editor.putString("timer_alarm_type_property", "");
             editor.apply();
-            printLog("正在更新hook位置", true);
+            printLog("Updating hook location", true);
             findAndUpdateHookTarget(sharedPreferences);
             return;
         }
         if (!sharedPreferences.getString("gms_version", "").equals(versionName) ) {
-            printLog("gms已更新: " + sharedPreferences.getString("gms_version", "") + "(" + sharedPreferences.getLong("gms_version_code", 0) + ")" + "->" + versionName + "(" +versionCode + ")", true);
+            printLog("GMS updated: " + sharedPreferences.getString("gms_version", "") + "(" + sharedPreferences.getLong("gms_version_code", 0) + ")" + "->" + versionName + "(" +versionCode + ")", true);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("gms_version", versionName);
             editor.putLong("gms_version_code", versionCode);
             editor.putBoolean("enable", false);
             editor.apply();
-            printLog("正在更新hook位置", true);
+            printLog("Updating hook location", true);
             findAndUpdateHookTarget(sharedPreferences);
             return;
         }
         if (!sharedPreferences.getBoolean("enable", false)) {
-            printLog("当前配置文件enable标识为false，FCMFIX退出", true);
+            printLog("The enable flag of the current configuration file is false, fcmfix exits", true);
             return;
         }
         startHook();
@@ -214,7 +214,7 @@ public class ReconnectManagerFix extends XposedModule {
                 try{
                     XposedHelpers.callStaticMethod(GcmChimeraService,GcmChimeraServiceLogMethodName , new Class<?>[]{String.class, Object[].class}, "[fcmfix] " + intent.getStringExtra("text"), null);
                 }catch (Throwable e){
-                    XposedBridge.log("输出日志到fcm失败： "+"[fcmfix] " + intent.getStringExtra("text"));
+                    XposedBridge.log("Failed output log to FCM： "+"[fcmfix] " + intent.getStringExtra("text"));
                 }
             }
         }
@@ -247,7 +247,7 @@ public class ReconnectManagerFix extends XposedModule {
 				                alarmClassConstructor = constructor;
 			            }
 		            }
-                    if(alarmClassConstructor == null) throw new Throwable("未找到构造函数");
+                    if(alarmClassConstructor == null) throw new Throwable("Constructor not found");
                     XposedBridge.hookMethod(alarmClassConstructor, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(final MethodHookParam param) {
@@ -260,14 +260,14 @@ public class ReconnectManagerFix extends XposedModule {
                                             editor.putBoolean("enable", true);
                                             editor.apply();
                                             isFinish[0] = true;
-                                            printLog("更新hook位置成功", true);
-                                            sendNotification("自动更新配置文件成功");
+                                            printLog("Update hook position successfully", true);
+                                            sendNotification("Autoupdate configuration file succeeded");
                                             startHook();
                                             return;
                                         }
                                     }
                                 }
-                                printLog("自动寻找hook点失败: 未找到目标方法", true);
+                                printLog("Automatically searching for hook points failed: target method not found", true);
                             }
                         }
                     });
@@ -276,8 +276,8 @@ public class ReconnectManagerFix extends XposedModule {
             }
         }catch (Throwable e){
             editor.putBoolean("enable", false);
-            printLog("自动寻找hook点失败"+e.getMessage(), true);
-            this.sendNotification("自动更新配置文件失败", "未能找到hook点，已禁用重连修复和固定心跳功能。");
+            printLog("Autofind hook point failed"+e.getMessage(), true);
+            this.sendNotification("Autoupdate configuration file failed", "Failed to find hook point, disable reconnection repair and fix heartbeat functions.");
             e.printStackTrace();
         }
         editor.apply();
@@ -301,7 +301,7 @@ public class ReconnectManagerFix extends XposedModule {
                 linearLayout2.addView(reConnectButton);
 
                 Button openFcmFixButton = new Button((ContextWrapper)param.thisObject);
-                openFcmFixButton.setText("打开FCMFIX");
+                openFcmFixButton.setText("Open fcmfix");
                 openFcmFixButton.setOnClickListener(view -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
