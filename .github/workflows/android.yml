@@ -53,7 +53,6 @@ jobs:
       with:
         name: "Auto Release ${{ env.VERSION_NAME }}"
         tag_name: ${{ env.VERSION_CODE }}-${{ env.VERSION_NAME }}
-        token: "${{ secrets.TOKEN }}"
         files: |
           ${{ github.workspace }}/app/build/outputs/apk/release/fcmfix-ci-${{ env.VERSION_NAME }}.apk
     
