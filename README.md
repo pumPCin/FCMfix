@@ -1,24 +1,24 @@
-# fcmfix(Android 10以上14以下 )(Android 14?)
+# fcmfix (Android 10 and above, Android 14 and below) (Android 14?)
 
 [![Android CI](https://github.com/kooritea/fcmfix/workflows/Android%20CI/badge.svg)](https://github.com/kooritea/fcmfix/actions)
 
-让fcm/gcm唤醒未启动的应用进行发送通知  
+Let FCM/GCM wake up the unstarted application to send notifications  
 
-### 附加功能
+### Additional features
 
-- 阻止Android系统在应用停止时自动移除通知栏的通知
-- 在miui/hyperos(?)上动态解除来自fcm的自启动限制
-- 移除miui/hyperos对后台应用的通知限制
+- Prevent Android system from automatically removing notifications from the notification bar when the app is stopped
+- Dynamically remove the auto-start restriction from fcm on miui/hyperos(?)
+- Remove notification restrictions on background apps from miui/hyperos
 
-### lsposed作用域
-- 在miui/hyperos上如果推送没有问题，就不需要勾选电量和性能
+### lsposed scope
+- If there is no problem with push on miui/hyperos, you don't need to check power and performance
 
-### 关于fcm
+### About FCM
 
-fcm是在Android中由google维护的一条介于google服务器与gms应用之间用于推送通知的长链接。  
-一般的工作流程为应用服务器将消息发送到google服务器，google服务器将消息推送给gms应用，gms应用通过广播传递给应用，应用通过接收到的fcm消息决定是否发送通知和通知内容。  
-其中gms通过fcm广播通知应用时，如果应用处于非运行状态，就会出现`Failed to broadcast to stopped app`，fcmfix主要就是解决这个问题。
+FCM is a long link between Google server and GMS application for push notifications maintained by Google in Android.
+The general workflow is that the application server sends the message to Google server, Google server pushes the message to GMS application, GMS application passes it to the application through broadcast, and the application decides whether to send notification and notification content based on the received FCM message.
+When GMS notifies the application through FCM broadcast, if the application is not running, `Failed to broadcast to stopped app` will appear. FCMfix is ​​mainly to solve this problem.
 
-### 已知问题
+### Known Issues
 
-- 非miui/hyperos系统可能需要给予目标应用类似允许自启动的权限。
+- Non-MIUI/HyperOS systems may need to grant the target application permissions similar to allowing automatic startup.
