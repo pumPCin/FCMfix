@@ -40,7 +40,7 @@ jobs:
         echo Last build tool version is: $BUILD_TOOL_VERSION
 
     - name: Rename
-      run: mv ${{ github.workspace }}/app/build/outputs/apk/release/app-release-unsigned-signed.apk ${{ github.workspace }}/app/build/outputs/apk/release/fcmfix-ci-${{ env.VERSION_NAME }}.apk
+      run: mv ${{ github.workspace }}/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/app/build/outputs/apk/release/fcmfix-ci-${{ env.VERSION_NAME }}.apk
     
     - name: Upload built apk
       uses: actions/upload-artifact@v3
@@ -63,14 +63,3 @@ jobs:
         filters: |
           src:
             - 'app/build.gradle'
-
-    - name: Release lsposed module repository
-      if: steps.changes.outputs.src == 'true'
-      uses: softprops/action-gh-release@v2
-      with:
-        name: "Auto Release ${{ env.VERSION_NAME }}"
-        tag_name: ${{ env.VERSION_CODE }}-${{ env.VERSION_NAME }}
-        repository: Xposed-Modules-Repo/com.kooritea.fcmfix
-        token: "${{ secrets.TOKEN_CLASSIC }}"
-        files: |
-          ${{ github.workspace }}/app/build/outputs/apk/release/fcmfix-ci-${{ env.VERSION_NAME }}.apk
