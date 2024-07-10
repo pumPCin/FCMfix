@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:textColor="@android:color/darker_gray"
-                    android:text="包含 FCM" />
+                    android:text="(Include FCM)" />
             </LinearLayout>
 
             <LinearLayout
