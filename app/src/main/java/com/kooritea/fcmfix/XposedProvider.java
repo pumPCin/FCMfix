@@ -45,7 +45,6 @@ public class XposedProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        //这里填写查询逻辑
         JSONObject config = new JSONObject();
         try {
             FileInputStream fis = getContext().openFileInput("config.json");
@@ -78,19 +77,16 @@ public class XposedProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        //这里填写插入逻辑
         return null;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        //这里填写更新逻辑
         return 0;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        //这里填写删除逻辑
         return 0;
     }
 }

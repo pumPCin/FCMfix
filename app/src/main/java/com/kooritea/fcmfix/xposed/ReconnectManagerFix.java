@@ -86,7 +86,7 @@ public class ReconnectManagerFix extends XposedModule {
                 }
             });
         }catch (Exception e){
-            XposedBridge.log("GcmChimeraService hook 失败");
+            XposedBridge.log("GcmChimeraService hook failed");
         }
     }
 
@@ -157,7 +157,6 @@ public class ReconnectManagerFix extends XposedModule {
         XposedHelpers.findAndHookMethod(timerClazz, sharedPreferences.getString("timer_settimeout_method", ""), long.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(final MethodHookParam param) {
-                // 修改心跳间隔
                 String alarmType = (String) XposedUtils.getObjectFieldByPath(param.thisObject,  sharedPreferences.getString("timer_alarm_type_property", ""));
                 if ("GCM_HB_ALARM".equals(alarmType)) {
                     long interval = sharedPreferences.getLong("heartbeatInterval", 0L);
@@ -175,7 +174,6 @@ public class ReconnectManagerFix extends XposedModule {
 
             @Override
             protected void afterHookedMethod(final MethodHookParam param) {
-                // 防止计时器出现负数计时,分别是心跳计时和重连计时
                 String alarmType = (String) XposedUtils.getObjectFieldByPath(param.thisObject,  sharedPreferences.getString("timer_alarm_type_property", ""));
                 if ("GCM_HB_ALARM".equals(alarmType) || "GCM_CONN_ALARM".equals(alarmType)) {
                     Field maxField = null;

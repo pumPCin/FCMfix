@@ -19,7 +19,6 @@ public class PowerkeeperFix extends XposedModule {
 
     protected void startHook(){
         try {
-
             Class<?> MilletConfig = XposedHelpers.findClassIfExists("com.miui.powerkeeper.millet.MilletConfig", loadPackageParam.classLoader);
             XposedHelpers.setStaticBooleanField(MilletConfig, "isGlobal", true);
             printLog("Set com.miui.powerkeeper.millet.MilletConfig.isGlobal to true");

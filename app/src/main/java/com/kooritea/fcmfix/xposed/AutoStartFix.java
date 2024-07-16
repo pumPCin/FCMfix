@@ -73,16 +73,8 @@ public class AutoStartFix extends XposedModule {
                     Intent intent = (Intent) XposedHelpers.getObjectField(methodHookParam.args[1], "intent");
                     String target = intent.getComponent() == null ? intent.getPackage() : intent.getComponent().getPackageName();
                     if (targetIsAllow(target)) {
-                        // 无日志，先放了
                         printLog("[" + intent.getAction() + "]checkApplicationAutoStart package_name: " + target, true);
                         methodHookParam.setResult(true);
-//                        if(isFCMIntent(intent)){
-//                            printLog("checkApplicationAutoStart package_name: " + target, true);
-//                            methodHookParam.setResult(true);
-//                        }else{
-//                            printLog("[skip][" + intent.getAction() + "]checkApplicationAutoStart package_name: " + target, true);
-//                        }
-
                     }
                 }
             });
@@ -113,15 +105,8 @@ public class AutoStartFix extends XposedModule {
                     Intent intent = (Intent) methodHookParam.args[1];
                     String target = intent.getComponent().getPackageName();
                     if(targetIsAllow(target)) {
-                        // 拿不到action，先放了
                         printLog("[" + intent.getAction() + "]AutoStartManagerServiceStubImpl.isAllowStartService package_name: " + target, true);
                         methodHookParam.setResult(true);
-//                        if(isFCMIntent(intent)){
-//                            printLog("AutoStartManagerServiceStubImpl.isAllowStartService package_name: " + target, true);
-//                            methodHookParam.setResult(true);
-//                        }else{
-//                            printLog("[skip][" + intent.getAction() + "]AutoStartManagerServiceStubImpl.isAllowStartService package_name: " + target, true);
-//                        }
                     }
                 }
             };

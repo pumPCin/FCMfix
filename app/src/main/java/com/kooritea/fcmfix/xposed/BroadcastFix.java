@@ -80,7 +80,6 @@ public class BroadcastFix extends XposedModule {
             if(intent_args_index == 0 || appOp_args_index == 0){
                 intent_args_index = 0;
                 appOp_args_index = 0;
-                // 根据参数名称查找，部分经过混淆的系统无效
                 for(int i = 0; i < parameters.length; i++){
                     if("appOp".equals(parameters[i].getName()) && parameters[i].getType() == int.class){
                         appOp_args_index = i;
@@ -93,7 +92,6 @@ public class BroadcastFix extends XposedModule {
             if(intent_args_index == 0 || appOp_args_index == 0){
                 intent_args_index = 0;
                 appOp_args_index = 0;
-                // 尝试用最后一个版本
                 if(parameters[3].getType() == Intent.class && parameters[12].getType() == int.class){
                     intent_args_index = 3;
                     appOp_args_index = 12;
@@ -104,11 +102,9 @@ public class BroadcastFix extends XposedModule {
                 intent_args_index = 0;
                 appOp_args_index = 0;
                 for(int i = 0; i < parameters.length; i++){
-                    // 从最后一个适配的版本的位置左右查找appOp的位置
                     if(Math.abs(12-i) < 2 && parameters[i].getType() == int.class){
                         appOp_args_index = i;
                     }
-                    // 唯一一个Intent参数的位置
                     if(parameters[i].getType() == Intent.class){
                         if(intent_args_index != 0){
                             printLog("Multiple Intents are found, stop searching for hook locations.");

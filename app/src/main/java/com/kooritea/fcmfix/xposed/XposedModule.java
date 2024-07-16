@@ -73,9 +73,6 @@ public abstract class XposedModule {
         });
     }
 
-    /**
-     * 每个被hook的APP第一次获取到context时调用
-     */
     private static void callAllOnCanReadConfig(){
         initReceiver();
         for(XposedModule instance : instances){
@@ -109,9 +106,6 @@ public abstract class XposedModule {
         }
     }
 
-    /**
-     * 尝试读取允许的应用列表但列表未初始化时调用
-     */
     protected void checkUserDeviceUnlockAndUpdateConfig(){
         if (context != null && context.getSystemService(UserManager.class).isUserUnlocked()) {
             try {
