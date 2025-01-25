@@ -1,6 +1,5 @@
 package com.kooritea.fcmfix.xposed;
 
-import android.app.AndroidAppHelper;
 import android.content.Intent;
 import android.os.Build;
 import java.lang.reflect.Method;
@@ -37,10 +36,6 @@ public class BroadcastFix extends XposedModule {
             }
         }
         if(targetMethod != null){
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
-                printLog("Unsupported Android versions (<10), fcmfix will not work.");
-                return;
-            }
             int intent_args_index = 0;
             int appOp_args_index = 0;
             Parameter[] parameters = targetMethod.getParameters();
@@ -150,14 +145,12 @@ public class BroadcastFix extends XposedModule {
                             }
                             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
                             printLog("Send Forced Start Broadcast: " + target, true);
-                            Intent extraIntent = new Intent();
-                            extraIntent.setAction("com.kooritea.fcmfix.FCM_BROADCAST_SENT");
-                            extraIntent.putExtra("target", target);
-                            AndroidAppHelper.currentApplication().getApplicationContext().sendBroadcast(extraIntent);
                         }
                     }
                 }
             });
+        } else {
+            printLog("No Such Method com.android.server.am.ActivityManagerService.broadcastIntentLocked");
         }
     }
 }
