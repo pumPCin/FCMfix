@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem disableAutoCleanNotificationMenuItem = menu.add("Prevent clean notifications");
         disableAutoCleanNotificationMenuItem.setCheckable(true);
 
-        MenuItem includeIceBoxDisableAppMenuItem = menu.add("允许唤醒被冰箱冻结的应用");
+        MenuItem includeIceBoxDisableAppMenuItem = menu.add("Allow to wake up frozen apps");
         includeIceBoxDisableAppMenuItem.setCheckable(true);
 
         menu.add("Select all apps with FCM");
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("onOptionsItemSelected",e.toString());
             }
         }
-        if(menuItem.getTitle().equals("允许唤醒被冰箱冻结的应用")){
+        if(menuItem.getTitle().equals("Allow to wake up frozen apps")){
             try {
                 this.config.put("includeIceBoxDisableApp", !menuItem.isChecked());
                 this.updateConfig();
