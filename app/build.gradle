@@ -27,6 +27,7 @@ android {
     lintOptions {
         checkReleaseBuilds false
     }
+    namespace = "com.kooritea.fcmfix"
 }
 
 dependencies {
