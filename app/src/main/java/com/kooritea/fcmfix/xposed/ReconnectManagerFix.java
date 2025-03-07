@@ -118,7 +118,7 @@ public class ReconnectManagerFix extends XposedModule {
                                             context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                                     sendNotification("FCM Message " + packageName, "",pendingIntent);
                                 }else{
-                                    printLog("无法获取目标应用active: " + packageName,false);
+                                    printLog("Unable to get app active: " + packageName,false);
                                 }
                             }catch (Exception e){
                                 printLog(e.getMessage(),false);
@@ -130,7 +130,7 @@ public class ReconnectManagerFix extends XposedModule {
                 printLog("No Such Method com.google.android.gms.gcm.DataMessageManager$BroadcastDoneReceiver.handler");
             }
         }catch (Exception e){
-            XposedBridge.log("DataMessageManager$BroadcastDoneReceiver hook 失败");
+            XposedBridge.log("DataMessageManager$BroadcastDoneReceiver h00k failed");
         }
     }
 
@@ -256,7 +256,7 @@ public class ReconnectManagerFix extends XposedModule {
                 try{
                     XposedHelpers.callStaticMethod(GcmChimeraService,GcmChimeraServiceLogMethodName , new Class<?>[]{String.class, Object[].class}, "[fcmfix] " + intent.getStringExtra("text"), null);
                 }catch (Throwable e){
-                    XposedBridge.log("Failed output log to FCM： "+"[fcmfix] " + intent.getStringExtra("text"));
+                    XposedBridge.log("Failed output log to FCM： " + "[fcmfix] " + intent.getStringExtra("text"));
                 }
             }
         }
