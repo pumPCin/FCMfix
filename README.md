@@ -7,7 +7,7 @@ Let FCM/GCM wake up the unstarted application to send notifications
 ### Additional features
 
 - Prevent Android system from automatically removing notifications from the notification bar when the app is stopped
-- Dynamically remove the auto-start restriction from fcm on miui/hyperos(?)
+- Dynamically remove the auto-start restriction from fcm on miui/hyperos(?)/OxygenOS15(?)/ColorOS15(?)
 - Remove notification restrictions on background apps from miui/hyperos
 
 ### lsposed scope
