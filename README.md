@@ -22,4 +22,4 @@ When GMS notifies the application through FCM broadcast, if the application is n
 
 ### Known Issues
 
-- Non-MIUI/HyperOS systems may need to grant the target application permissions similar to allowing automatic startup.
+- Non-MIUI/HyperOS/OxygenOS15/ColorOS15 systems may need to grant the target application permissions similar to allowing automatic startup.

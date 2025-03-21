@@ -18,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.kooritea.fcmfix.util.ContentProviderHelper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
@@ -31,10 +32,8 @@ public abstract class XposedModule {
 
     protected XC_LoadPackage.LoadPackageParam loadPackageParam;
     public static Set<String> allowList = null;
-
     static final String TAG = "fcmfix";
-    private static Boolean disableAutoCleanNotification = null;
-    private static Boolean includeIceBoxDisableApp = null;
+    private static final HashMap<String,Object> config = new HashMap<>();
 
     @SuppressLint("StaticFieldLeak")
     protected static Context context = null;
@@ -133,7 +132,7 @@ public abstract class XposedModule {
     };
 
     protected boolean targetIsAllow(String packageName){
-        if(disableAutoCleanNotification == null){
+        if(config.get("init") == null){
             this.checkUserDeviceUnlockAndUpdateConfig();
         }
         if("com.kooritea.fcmfix".equals(packageName)){
@@ -145,18 +144,15 @@ public abstract class XposedModule {
         return false;
     }
 
-    protected boolean isDisableAutoCleanNotification(){
-        if(disableAutoCleanNotification == null){
+    protected boolean getBooleanConfig(String key, boolean defaultValue){
+        if(config.get("init") == null){
             this.checkUserDeviceUnlockAndUpdateConfig();
         }
-        return disableAutoCleanNotification != null && disableAutoCleanNotification;
-    }
-
-    protected boolean isIncludeIceBoxDisableApp(){
-        if(includeIceBoxDisableApp == null){
-            this.checkUserDeviceUnlockAndUpdateConfig();
+        if(config.get("init") == null){
+            return defaultValue;
         }
-        return includeIceBoxDisableApp != null && includeIceBoxDisableApp;
+        Object value = config.get(key);
+        return value == null ? defaultValue : (Boolean) value;
     }
 
     protected static void onUpdateConfig(){
@@ -172,8 +168,10 @@ public abstract class XposedModule {
                             if(allowList != null && "android".equals(getSelfPackageName())){
                                 printLog( "[XSharedPreferences Mode]onUpdateConfig allowList size: " + allowList.size());
                             }
-                            disableAutoCleanNotification = pref.getBoolean("disableAutoCleanNotification", false);
-                            includeIceBoxDisableApp = pref.getBoolean("includeIceBoxDisableApp", false);
+                            config.put("disableAutoCleanNotification", pref.getBoolean("disableAutoCleanNotification", false));
+                            config.put("includeIceBoxDisableApp", pref.getBoolean("includeIceBoxDisableApp", false));
+                            config.put("noResponseNotification", pref.getBoolean("noResponseNotification", false));
+                            config.put("init", true);
                             loadConfigThread = null;
                             return;
                         }
@@ -186,8 +184,10 @@ public abstract class XposedModule {
                         if(allowList != null && "android".equals(getSelfPackageName())){
                             printLog( "[ContentProvider Mode]onUpdateConfig allowList size: " + allowList.size());
                         }
-                        disableAutoCleanNotification = contentProviderHelper.getBoolean("disableAutoCleanNotification", false);
-                        includeIceBoxDisableApp = contentProviderHelper.getBoolean("includeIceBoxDisableApp", false);
+                        config.put("disableAutoCleanNotification", contentProviderHelper.getBoolean("disableAutoCleanNotification", false));
+                        config.put("includeIceBoxDisableApp", contentProviderHelper.getBoolean("includeIceBoxDisableApp", false));
+                        config.put("noResponseNotification", contentProviderHelper.getBoolean("noResponseNotification", false));
+                        config.put("init", true);
                         contentProviderHelper.close();
                     }catch (Exception e){
                         printLog("Wake up fcmfix to read the configuration failed: " + e.getMessage());
@@ -207,6 +207,7 @@ public abstract class XposedModule {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private static synchronized void initReceiver(){
         if(!isInitReceiver && context != null){
             isInitReceiver = true;
@@ -290,13 +291,9 @@ public abstract class XposedModule {
 
     protected boolean isFCMIntent(Intent intent) {
         String action = intent.getAction();
-        if (action != null && (action.endsWith(".android.c2dm.intent.RECEIVE") ||
-                               "com.google.firebase.MESSAGING_EVENT".equals(action) ||
-                               "com.google.firebase.INSTANCE_ID_EVENT".equals(action))) {
-            return true;
-        } else {
-            return false;
-        }
+        return action != null && (action.endsWith(".android.c2dm.intent.RECEIVE") ||
+                "com.google.firebase.MESSAGING_EVENT".equals(action) ||
+                "com.google.firebase.INSTANCE_ID_EVENT".equals(action));
     }
 
      protected static String getSelfPackageName() {

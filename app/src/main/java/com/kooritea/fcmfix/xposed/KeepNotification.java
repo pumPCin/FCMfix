@@ -79,12 +79,12 @@ public class KeepNotification extends XposedModule{
             XposedBridge.hookMethod(targetMethod,new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) {
-                    if(isDisableAutoCleanNotification() && targetIsAllow((String) param.args[finalPkg_args_index])){
+                    if(getBooleanConfig("disableAutoCleanNotification",false) && targetIsAllow((String) param.args[finalPkg_args_index])){
                         int reason = (int)param.args[finalReason_args_index];
                         if(reason == NotificationListenerService.REASON_PACKAGE_CHANGED){
                             param.setResult(null);
                         }
-                        if(reason == 10020){ // cos15/oos15
+                        if(reason == 10020 || reason == 10021){ // cos15/oos15
                             param.setResult(null);
                         }
                     }

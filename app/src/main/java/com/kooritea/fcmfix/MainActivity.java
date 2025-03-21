@@ -218,6 +218,9 @@ public class MainActivity extends AppCompatActivity {
             if(this.config.isNull("includeIceBoxDisableApp")){
                 this.config.put("includeIceBoxDisableApp", false);
             }
+            if(this.config.isNull("noResponseNotification")){
+                this.config.put("noResponseNotification", false);
+            }
         } catch (IOException | JSONException e) {
             Log.e("onCreate",e.toString());
         }
@@ -258,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                 sharedPreferencesEditor.putStringSet("allowList", this.allowList);
                 sharedPreferencesEditor.putBoolean("disableAutoCleanNotification", this.config.getBoolean("disableAutoCleanNotification"));
                 sharedPreferencesEditor.putBoolean("includeIceBoxDisableApp", this.config.getBoolean("includeIceBoxDisableApp"));
+                sharedPreferencesEditor.putBoolean("noResponseNotification", this.config.getBoolean("noResponseNotification"));
                 sharedPreferencesEditor.commit();
             }
         } catch (Exception e) {
@@ -276,14 +280,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu){
-        MenuItem isShowLauncherIconMenuItem = menu.add("Hide fcmfix app icon");
-        isShowLauncherIconMenuItem.setCheckable(true);
+        menu.add("Hide fcmfix app icon").setCheckable(true);
 
-        MenuItem disableAutoCleanNotificationMenuItem = menu.add("Prevent clean notifications");
-        disableAutoCleanNotificationMenuItem.setCheckable(true);
+        menu.add("Prevent clean notifications").setCheckable(true);
 
-        MenuItem includeIceBoxDisableAppMenuItem = menu.add("Allow to wake up frozen apps");
-        includeIceBoxDisableAppMenuItem.setCheckable(true);
+        menu.add("Allow to wake up frozen apps").setCheckable(true);
+
+        menu.add("Notify if app no response").setCheckable(true);
 
         menu.add("Select all apps with FCM");
 
@@ -312,8 +315,15 @@ public class MainActivity extends AppCompatActivity {
             includeIceBoxDisableAppMenuItem.setChecked(false);
         }
 
+        MenuItem noResponseNotificationMenuItem = menu.getItem(3);
+        try {
+            noResponseNotificationMenuItem.setChecked(this.config.getBoolean("noResponseNotification"));
+        } catch (JSONException e) {
+            noResponseNotificationMenuItem.setChecked(false);
+        }
 
-        MenuItem selectAllAppIncludeFcmMenuItem = menu.getItem(3);
+
+        MenuItem selectAllAppIncludeFcmMenuItem = menu.getItem(4);
         selectAllAppIncludeFcmMenuItem.setOnMenuItemClickListener(menuItem -> {
             for(AppInfo appInfo : appListAdapter.mAppList){
                 if(appInfo.includeFcm){
@@ -325,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        MenuItem openFcmDiagnosticsMenuItem = menu.getItem(4);
+        MenuItem openFcmDiagnosticsMenuItem = menu.getItem(5);
         openFcmDiagnosticsMenuItem.setOnMenuItemClickListener(menuItem -> {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -358,6 +368,14 @@ public class MainActivity extends AppCompatActivity {
         if(menuItem.getTitle().equals("Allow to wake up frozen apps")){
             try {
                 this.config.put("includeIceBoxDisableApp", !menuItem.isChecked());
+                this.updateConfig();
+            } catch (JSONException e) {
+                Log.e("onOptionsItemSelected",e.toString());
+            }
+        }
+        if(menuItem.getTitle().equals("Notify if app no response")){
+            try {
+                this.config.put("noResponseNotification", !menuItem.isChecked());
                 this.updateConfig();
             } catch (JSONException e) {
                 Log.e("onOptionsItemSelected",e.toString());
