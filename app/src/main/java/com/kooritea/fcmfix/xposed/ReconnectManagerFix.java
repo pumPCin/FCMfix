@@ -101,58 +101,6 @@ public class ReconnectManagerFix extends XposedModule {
         }catch (Exception e){
             XposedBridge.log("GcmChimeraService h00k failed");
         }
-        try{
-            Class<?> clazz = XposedHelpers.findClass("com.google.android.gms.gcm.DataMessageManager$BroadcastDoneReceiver", loadPackageParam.classLoader);
-            final Method[] declareMethods = clazz.getDeclaredMethods();
-            Method targetMethod = null;
-            for(Method method : declareMethods){
-                Parameter[] parameters = method.getParameters();
-                if(parameters.length == 2 && parameters[0].getType() == Context.class && parameters[1].getType() == Intent.class){
-                    targetMethod = method;
-                    break;
-                }
-            }
-            if(targetMethod != null){
-                XposedBridge.hookMethod(targetMethod,new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                        int resultCode = (int)XposedHelpers.callMethod(methodHookParam.thisObject, "getResultCode");
-                        Intent intent = (Intent)methodHookParam.args[1];
-                        String packageName = intent.getPackage();
-                        if(resultCode != -1 && getBooleanConfig("noResponseNotification",false) && targetIsAllow(packageName)){
-                            try{
-                                Intent notifyIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-                                if(notifyIntent!=null){
-                                    notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    PendingIntent pendingIntent = PendingIntent.getActivity(
-                                            context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-                                    createFcmfixChannel(notificationManager);
-                                    NotificationCompat.Builder notification = new NotificationCompat.Builder(context, "fcmfix")
-                                            .setSmallIcon(android.R.drawable.ic_dialog_info)
-                                            .setContentTitle("FCM Message")
-                                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-                                    Bitmap icon = getAppIcon(packageName);
-                                    if(icon != null){
-                                        notification.setLargeIcon(icon);
-                                    }
-                                    notification.setContentIntent(pendingIntent).setAutoCancel(true);
-                                    notificationManager.notify((int) System.currentTimeMillis(), notification.build());
-                                }else{
-                                    printLog("Unable to get app active: " + packageName,false);
-                                }
-                            }catch (Exception e){
-                                printLog(e.getMessage(),false);
-                            }
-                        }
-                    }
-                });
-            }else{
-                printLog("No Such Method com.google.android.gms.gcm.DataMessageManager$BroadcastDoneReceiver.handler");
-            }
-        }catch (Exception e){
-            XposedBridge.log("DataMessageManager$BroadcastDoneReceiver h00k failed");
-        }
     }
 
     public static final String configVersion = "v3";
@@ -161,7 +109,7 @@ public class ReconnectManagerFix extends XposedModule {
         String versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         long versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).getLongVersionCode();
         if(versionCode < 213916046){
-            printLog("Old version of GMS. Please use fcmfix version 0.4.1 and disable the reconnection repair function.");
+            printLog("Old GMS version. Please use fcmfix 0.4.1 version and disable the reconnection repair function.");
             return;
         }
         if (!sharedPreferences.getBoolean("isInit", false) || !sharedPreferences.getString("config_version", "").equals(configVersion)) {
@@ -194,7 +142,7 @@ public class ReconnectManagerFix extends XposedModule {
             return;
         }
         if (!sharedPreferences.getBoolean("enable", false)) {
-            printLog("The enable flag of the current configuration file is false, fcmfix exits", true);
+            printLog("In file configuration current flag is <false>, fcmfix exits", true);
             return;
         }
         startHook();
@@ -303,13 +251,13 @@ public class ReconnectManagerFix extends XposedModule {
                     final Class<?> alarmClass = timerClassField.getType();
                     final Boolean[] isFinish = {false};
                     Constructor alarmClassConstructor = null;
-		            for (Constructor constructor: alarmClass.getConstructors()) {
-			            Class[] pts = constructor.getParameterTypes();
-			            if (alarmClassConstructor == null || pts.length > alarmClassConstructor.getParameterCount()) {
+                    for (Constructor constructor: alarmClass.getConstructors()) {
+                        Class[] pts = constructor.getParameterTypes();
+                        if (alarmClassConstructor == null || pts.length > alarmClassConstructor.getParameterCount()) {
                             if (pts[0] == Context.class && pts[1] == int.class && pts[2] == String.class)
-				                alarmClassConstructor = constructor;
-			            }
-		            }
+                                alarmClassConstructor = constructor;
+                        }
+                    }
                     if(alarmClassConstructor == null) throw new Throwable("Constructor not found");
                     XposedBridge.hookMethod(alarmClassConstructor, new XC_MethodHook() {
                         @Override
@@ -375,26 +323,5 @@ public class ReconnectManagerFix extends XposedModule {
                 linearLayout2.addView(openFcmFixButton);
             }
         });
-    }
-
-    private static Bitmap getAppIcon(String packageName) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0);
-            Drawable drawable = pm.getApplicationIcon(appInfo);
-            if (drawable instanceof BitmapDrawable) {
-                return ((BitmapDrawable) drawable).getBitmap();
-            } else {
-                Bitmap bitmap = Bitmap.createBitmap(
-                        drawable.getIntrinsicWidth(),
-                        drawable.getIntrinsicHeight(),
-                        Bitmap.Config.ARGB_8888);
-                drawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                drawable.draw(new android.graphics.Canvas(bitmap));
-                return bitmap;
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
     }
 }
