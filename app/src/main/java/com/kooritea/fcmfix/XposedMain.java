@@ -1,7 +1,6 @@
 package com.kooritea.fcmfix;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import com.kooritea.fcmfix.xposed.AutoStartFix;
 import com.kooritea.fcmfix.xposed.BroadcastFix;
@@ -26,7 +25,17 @@ public class XposedMain implements IXposedHookLoadPackage {
             return;
         }
         if(loadPackageParam.packageName.equals("android")){
+            XposedModule.isBootComplete = false;
             XposedModule.staticLoadPackageParam = loadPackageParam;
+            new Thread(() -> {
+                try {
+                    Thread.sleep(60000);
+                    XposedModule.isBootComplete = true;
+                    XposedBridge.log("[fcmfix] isBootComplete");
+                } catch (Exception e) {
+                    XposedBridge.log("[fcmfix] " + e.getMessage());
+                }
+            }).start();
             XposedBridge.log("[fcmfix] start h00k com.android.server.am.ActivityManagerService");
             new BroadcastFix(loadPackageParam);
 
@@ -51,7 +60,6 @@ public class XposedMain implements IXposedHookLoadPackage {
             XposedBridge.log("[fcmfix] start h00k com.miui.powerkeeper");
             new PowerkeeperFix(loadPackageParam);
         }
-
     }
     private boolean fileIsExists(String strFile) {
         try {
