@@ -39,7 +39,7 @@ public abstract class XposedModule {
     protected static Context context = null;
     private static final ArrayList<XposedModule> instances = new ArrayList<>();
     private static Boolean isInitReceiver = false;
-    public static Boolean isBootComplete = true;
+    public static Boolean isBootComplete = false;
     private static Thread loadConfigThread = null;
 
     protected XposedModule(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
@@ -51,7 +51,7 @@ public abstract class XposedModule {
             if(context != null && context.getSystemService(UserManager.class).isUserUnlocked()){
                 try{
                     onCanReadConfig();
-                }catch (Exception e){
+                }catch (Throwable e){
                     printLog(e.getMessage());
                 }
             }
@@ -79,16 +79,29 @@ public abstract class XposedModule {
 
     private static void callAllOnCanReadConfig(){
         initReceiver();
+        if("android".equals(getSelfPackageName())){
+            new Thread(() -> {
+                try {
+                    Thread.sleep(60000);
+                    isBootComplete = true;
+                    printLog("Boot Complete");
+                } catch (Throwable e) {
+                    printLog(e.getMessage());
+                }
+            }).start();
+        }else{
+            isBootComplete = true;
+        }
         for(XposedModule instance : instances){
             try{
                 instance.onCanReadConfig();
-            }catch (Exception e){
+            }catch (Throwable e){
                 printLog(e.getMessage());
             }
         }
     }
 
-    protected void onCanReadConfig() throws Exception{}
+    protected void onCanReadConfig() throws Throwable{}
 
     protected static void printLog(String text){
         printLog(text, false);
@@ -102,7 +115,7 @@ public abstract class XposedModule {
 
             try {
                 context.sendBroadcast(log);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 XposedBridge.log("[fcmfix] ["+getSelfPackageName()+"]"+text);
             }
         } else {
@@ -114,7 +127,7 @@ public abstract class XposedModule {
         if (context != null && context.getSystemService(UserManager.class).isUserUnlocked()) {
             try {
                 onUpdateConfig();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 printLog("Update configuration file failed: " + e.getMessage());
             }
         }
@@ -126,7 +139,7 @@ public abstract class XposedModule {
             if (Intent.ACTION_USER_UNLOCKED.equals(action)) {
                 try {
                     context.unregisterReceiver(unlockBroadcastReceive);
-                } catch (Exception ignored) { }
+                } catch (Throwable ignored) { }
                 callAllOnCanReadConfig();
             }
         }
@@ -176,7 +189,7 @@ public abstract class XposedModule {
                             loadConfigThread = null;
                             return;
                         }
-                    }catch (Exception e){
+                    }catch (Throwable e){
                         printLog("If app configuration cannot be read directly, fcmfix will be awakened for reading: " + e.getMessage());
                     }
                     try{
@@ -190,7 +203,7 @@ public abstract class XposedModule {
                         config.put("noResponseNotification", contentProviderHelper.getBoolean("noResponseNotification", false));
                         config.put("init", true);
                         contentProviderHelper.close();
-                    }catch (Exception e){
+                    }catch (Throwable e){
                         printLog("Wake up fcmfix to read the configuration failed: " + e.getMessage());
                     }
                     loadConfigThread = null;

@@ -19,7 +19,7 @@ public class AutoStartFix extends XposedModule {
         try{
             this.startHook();
             this.startHookRemovePowerPolicy();
-        }catch (Exception e) {
+        }catch (Throwable e) {
             printLog("h00k error AutoStartFix:" + e.getMessage());
         }
     }
