@@ -144,9 +144,9 @@ public class MainActivity extends AppCompatActivity {
             this.mAppList = _allowList;
             if(_allowList.size() == 0 || _allowList.isEmpty() ||(_allowList.size() == 1 && "com.kooritea.fcmfix".equals(_allowList.get(0).packageName))){
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("请在系统设置中授予读取应用列表权限")
-                        .setMessage("或直接编辑" + getApplicationContext().getFilesDir().getAbsolutePath() + "/config.json(需重启生效)")
-                        .setPositiveButton("确定", (dialog, which) -> {})
+                        .setTitle("Grant permission to read the app list in system settings")
+                        .setMessage("or edit directly " + getApplicationContext().getFilesDir().getAbsolutePath() + "/config.json (Requires restart to take effect)")
+                        .setPositiveButton("Sure", (dialog, which) -> {})
                         .show();
             }
         }
@@ -304,53 +304,56 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public final boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem isShowLauncherIconMenuItem = menu.getItem(0);
-        PackageManager packageManager = getPackageManager();
-        isShowLauncherIconMenuItem.setChecked(packageManager.getComponentEnabledSetting(new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home")) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
-
-        MenuItem disableAutoCleanNotificationMenuItem = menu.getItem(1);
-        try {
-            disableAutoCleanNotificationMenuItem.setChecked(this.config.getBoolean("disableAutoCleanNotification"));
-        } catch (JSONException e) {
-            disableAutoCleanNotificationMenuItem.setChecked(false);
-        }
-
-        MenuItem includeIceBoxDisableAppMenuItem = menu.getItem(2);
-        try {
-            includeIceBoxDisableAppMenuItem.setChecked(this.config.getBoolean("includeIceBoxDisableApp"));
-        } catch (JSONException e) {
-            includeIceBoxDisableAppMenuItem.setChecked(false);
-        }
-
-        MenuItem noResponseNotificationMenuItem = menu.getItem(3);
-        try {
-            noResponseNotificationMenuItem.setChecked(this.config.getBoolean("noResponseNotification"));
-        } catch (JSONException e) {
-            noResponseNotificationMenuItem.setChecked(false);
-        }
-
-
-        MenuItem selectAllAppIncludeFcmMenuItem = menu.getItem(4);
-        selectAllAppIncludeFcmMenuItem.setOnMenuItemClickListener(menuItem -> {
-            for(AppInfo appInfo : appListAdapter.mAppList){
-                if(appInfo.includeFcm){
-                    addAppInAllowList(appInfo.packageName);
-                    appInfo.isAllow = true;
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if("Hide fcmfix app icon".equals(item.getTitle())){
+                PackageManager packageManager = getPackageManager();
+                item.setChecked(packageManager.getComponentEnabledSetting(new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home")) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+            }
+            if("Prevent clean notifications".equals(item.getTitle())){
+                try {
+                    item.setChecked(this.config.getBoolean("disableAutoCleanNotification"));
+                } catch (JSONException e) {
+                    item.setChecked(false);
                 }
             }
-            appListAdapter.notifyDataSetChanged();
-            return false;
-        });
-
-        MenuItem openFcmDiagnosticsMenuItem = menu.getItem(5);
-        openFcmDiagnosticsMenuItem.setOnMenuItemClickListener(menuItem -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setPackage("com.google.android.gms");
-            intent.setComponent(new ComponentName("com.google.android.gms","com.google.android.gms.gcm.GcmDiagnostics"));
-            startActivity(intent);
-            return false;
-        });
+            if("Allow to wake up frozen apps".equals(item.getTitle())){
+                try {
+                    item.setChecked(this.config.getBoolean("includeIceBoxDisableApp"));
+                } catch (JSONException e) {
+                    item.setChecked(false);
+                }
+            }
+            if("Notify if app no response".equals(item.getTitle())){
+                try {
+                    item.setChecked(this.config.getBoolean("noResponseNotification"));
+                } catch (JSONException e) {
+                    item.setChecked(false);
+                }
+            }
+            if("Select all apps with FCM".equals(item.getTitle())){
+                item.setOnMenuItemClickListener(menuItem -> {
+                    for(AppInfo appInfo : appListAdapter.mAppList){
+                        if(appInfo.includeFcm){
+                            addAppInAllowList(appInfo.packageName);
+                            appInfo.isAllow = true;
+                        }
+                    }
+                    appListAdapter.notifyDataSetChanged();
+                    return false;
+                });
+            }
+            if("Open FCM diagnostics".equals(item.getTitle())){
+                item.setOnMenuItemClickListener(menuItem -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setPackage("com.google.android.gms");
+                    intent.setComponent(new ComponentName("com.google.android.gms","com.google.android.gms.gcm.GcmDiagnostics"));
+                    startActivity(intent);
+                    return false;
+                });
+            }
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
