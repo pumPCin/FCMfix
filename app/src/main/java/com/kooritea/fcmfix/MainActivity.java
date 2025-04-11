@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu){
-        menu.add("Hide fcmfix app icon").setCheckable(true);
+        menu.add("Hide FCMfix app icon").setCheckable(true);
 
         menu.add("Prevent clean notifications").setCheckable(true);
 
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
     public final boolean onPrepareOptionsMenu(Menu menu) {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
-            if("Hide fcmfix app icon".equals(item.getTitle())){
+            if("Hide FCMfix app icon".equals(item.getTitle())){
                 PackageManager packageManager = getPackageManager();
                 item.setChecked(packageManager.getComponentEnabledSetting(new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home")) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
             }
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public final boolean onOptionsItemSelected(MenuItem menuItem) {
-        if(menuItem.getTitle().equals("Hide fcmfix app icon")){
+        if(menuItem.getTitle().equals("Hide FCMfix app icon")){
             PackageManager packageManager = getPackageManager();
             packageManager.setComponentEnabledSetting(
                     new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home"),

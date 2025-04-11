@@ -109,7 +109,7 @@ public class ReconnectManagerFix extends XposedModule {
         String versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         long versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).getLongVersionCode();
         if(versionCode < 213916046){
-            printLog("Old GMS version. Please use fcmfix 0.4.1 version and disable the reconnection repair function.");
+            printLog("Old GMS version. Please use FCMfix 0.4.1 version and disable the reconnection repair function.");
             return;
         }
         if (!sharedPreferences.getBoolean("isInit", false) || !sharedPreferences.getString("config_version", "").equals(configVersion)) {
@@ -142,7 +142,7 @@ public class ReconnectManagerFix extends XposedModule {
             return;
         }
         if (!sharedPreferences.getBoolean("enable", false)) {
-            printLog("In file configuration current flag is <false>, fcmfix exits", true);
+            printLog("In file configuration current flag is <false>, FCMfix exits", true);
             return;
         }
         startHook();
@@ -162,7 +162,7 @@ public class ReconnectManagerFix extends XposedModule {
                     long hinterval = sharedPreferences.getLong("heartbeatInterval", 0L);
                     long cinterval = sharedPreferences.getLong("reconnInterval", 0L);
                     if((hinterval > 1000) || (cinterval > 1000)){
-                        param.setResult(param.getResult() + "[fcmfix locked]");
+                        param.setResult(param.getResult() + "[FCMfix locked]");
                     }
                 }
             }
@@ -223,9 +223,9 @@ public class ReconnectManagerFix extends XposedModule {
             String action = intent.getAction();
             if ("com.kooritea.fcmfix.log".equals(action)) {
                 try{
-                    XposedHelpers.callStaticMethod(GcmChimeraService,GcmChimeraServiceLogMethodName , new Class<?>[]{String.class, Object[].class}, "[fcmfix] " + intent.getStringExtra("text"), null);
+                    XposedHelpers.callStaticMethod(GcmChimeraService,GcmChimeraServiceLogMethodName , new Class<?>[]{String.class, Object[].class}, "[FCMfix] " + intent.getStringExtra("text"), null);
                 }catch (Throwable e){
-                    XposedBridge.log("Failed output log to FCM： " + "[fcmfix] " + intent.getStringExtra("text"));
+                    XposedBridge.log("Failed output log to FCM： " + "[FCMfix] " + intent.getStringExtra("text"));
                 }
             }
         }
@@ -312,7 +312,7 @@ public class ReconnectManagerFix extends XposedModule {
                 linearLayout2.addView(reConnectButton);
 
                 Button openFcmFixButton = new Button((ContextWrapper)param.thisObject);
-                openFcmFixButton.setText("Open fcmfix");
+                openFcmFixButton.setText("Open FCMfix");
                 openFcmFixButton.setOnClickListener(view -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

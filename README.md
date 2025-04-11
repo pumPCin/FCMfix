@@ -1,4 +1,4 @@
-# fcmfix (Android 10-15)
+# FCMfix (Android 10-15)
 
 [![Android CI](https://github.com/kooritea/fcmfix/workflows/Android%20CI/badge.svg)](https://github.com/kooritea/fcmfix/actions)
 
@@ -7,12 +7,12 @@ Let FCM/GCM wake up the unstarted application to send notifications
 ### Additional features
 
 - Prevent Android system from automatically removing notifications from the notification bar when the app is stopped
-- Dynamically remove the auto-start restriction from fcm on miui/hyperos(?)/OxygenOS15(?)/ColorOS15(?)
-- Remove notification restrictions on background apps from miui/hyperos
+- Dynamically remove the auto-start restriction from fcm on MIUI/HyperOS(?)/OxygenOS15(?)/ColorOS15(?)
+- Remove notification restrictions on background apps from MIUI/HyperOS
 - Send a reminder notification when the target application is not woken up as expected
 
 ### lsposed scope
-- If there is no problem with push on miui/hyperos, you don't need to check power and performance
+- If there is no problem with push on MIUI/HyperOS, you don't need to check power and performance
 
 ### About FCM
 

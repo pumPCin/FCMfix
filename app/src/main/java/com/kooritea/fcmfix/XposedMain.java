@@ -21,33 +21,33 @@ public class XposedMain implements IXposedHookLoadPackage {
     @SuppressLint("SdCardPath")
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
         if(fileIsExists("/sdcard/disable_fcmfix")){
-            XposedBridge.log("[fcmfix] /sdcard/disable_fcmfix is exists, exit");
+            XposedBridge.log("[FCMfix] /sdcard/disable_fcmfix is exists, exit");
             return;
         }
         if(loadPackageParam.packageName.equals("android")){
             XposedModule.staticLoadPackageParam = loadPackageParam;
-            XposedBridge.log("[fcmfix] start h00k com.android.server.am.ActivityManagerService");
+            XposedBridge.log("[FCMfix] start h00k com.android.server.am.ActivityManagerService/com.android.server.am.BroadcastController");
             new BroadcastFix(loadPackageParam);
 
-            XposedBridge.log("[fcmfix] start h00k com.android.server.notification.NotificationManagerServiceInjector");
+            XposedBridge.log("[FCMfix] start h00k com.android.server.notification.NotificationManagerServiceInjector");
             new MiuiLocalNotificationFix(loadPackageParam);
 
-            XposedBridge.log("[fcmfix] com.android.server.am.BroadcastQueueInjector.checkApplicationAutoStart");
+            XposedBridge.log("[FCMfix] com.android.server.am.BroadcastQueueInjector.checkApplicationAutoStart");
             new AutoStartFix(loadPackageParam);
 
-            XposedBridge.log("[fcmfix] com.android.server.notification.NotificationManagerService");
+            XposedBridge.log("[FCMfix] com.android.server.notification.NotificationManagerService");
             new KeepNotification(loadPackageParam);
         }
 
         if(loadPackageParam.packageName.equals("com.google.android.gms") && loadPackageParam.isFirstApplication){
             XposedModule.staticLoadPackageParam = loadPackageParam;
-            XposedBridge.log("[fcmfix] start h00k com.google.android.gms");
+            XposedBridge.log("[FCMfix] start h00k com.google.android.gms");
             new ReconnectManagerFix(loadPackageParam);
         }
 
         if(loadPackageParam.packageName.equals("com.miui.powerkeeper") && loadPackageParam.isFirstApplication){
             XposedModule.staticLoadPackageParam = loadPackageParam;
-            XposedBridge.log("[fcmfix] start h00k com.miui.powerkeeper");
+            XposedBridge.log("[FCMfix] start h00k com.miui.powerkeeper");
             new PowerkeeperFix(loadPackageParam);
         }
     }
@@ -58,7 +58,7 @@ public class XposedMain implements IXposedHookLoadPackage {
                 return false;
             }
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             return false;
         }
         return true;
