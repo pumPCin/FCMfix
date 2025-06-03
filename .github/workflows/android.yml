@@ -3,7 +3,7 @@ name: Android CI
 on:
   workflow_dispatch:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -41,10 +41,10 @@ jobs:
           echo Last build tool version is: $BUILD_TOOL_VERSION
 
       - name: Rename
-        run: mv ${{ github.workspace }}/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/app/build/outputs/apk/release/fcmfix-ci-${{ env.VERSION_NAME }}.apk
+        run: mv ${{ github.workspace }}/app/build/outputs/apk/release/app-release-unsigned.apk ${{ github.workspace }}/app/build/outputs/apk/release/FCMfix-ci-${{ env.VERSION_NAME }}.apk
 
       - name: Upload built apk
         uses: actions/upload-artifact@v4
         with:
           name: release
-          path: ${{ github.workspace }}/app/build/outputs/apk/release/fcmfix-ci-${{ env.VERSION_NAME }}.apk
+          path: ${{ github.workspace }}/app/build/outputs/apk/release/FCMfix-ci-${{ env.VERSION_NAME }}.apk

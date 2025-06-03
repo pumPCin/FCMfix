@@ -105,7 +105,7 @@ public class ReconnectManagerFix extends XposedModule {
 
     public static final String configVersion = "v3";
     private void checkVersion() throws Throwable {
-        final SharedPreferences sharedPreferences = context.getSharedPreferences("fcmfix_config", Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = context.getSharedPreferences("FCMfix_config", Context.MODE_PRIVATE);
         String versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         long versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).getLongVersionCode();
         if(versionCode < 213916046){
@@ -113,7 +113,7 @@ public class ReconnectManagerFix extends XposedModule {
             return;
         }
         if (!sharedPreferences.getBoolean("isInit", false) || !sharedPreferences.getString("config_version", "").equals(configVersion)) {
-            printLog("fcmfix_config init", true);
+            printLog("FCMfix_config init", true);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("isInit", true);
             editor.putBoolean("enable", false);
@@ -149,7 +149,7 @@ public class ReconnectManagerFix extends XposedModule {
     }
 
     protected void startHook() {
-        final SharedPreferences sharedPreferences = context.getSharedPreferences("fcmfix_config", Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = context.getSharedPreferences("FCMfix_config", Context.MODE_PRIVATE);
         printLog("timer_class: "+ sharedPreferences.getString("timer_class", ""), true);
         printLog("timer_alarm_type_property: "+ sharedPreferences.getString("timer_alarm_type_property", ""), true);
         printLog("timer_settimeout_method: "+ sharedPreferences.getString("timer_settimeout_method", ""), true);
