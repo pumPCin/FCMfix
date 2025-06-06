@@ -136,7 +136,7 @@ public class BroadcastFix extends XposedModule {
                     return;
                 }
                 Intent intent = (Intent) methodHookParam.args[finalIntent_args_index];
-                if(intent.getFlags() != Intent.FLAG_INCLUDE_STOPPED_PACKAGES && isFCMIntent(intent)){
+                if((intent.getFlags() & Intent.FLAG_INCLUDE_STOPPED_PACKAGES) == 0 && isFCMIntent(intent)){
                     String target;
                     if (intent.getComponent() != null) {
                         target = intent.getComponent().getPackageName();
