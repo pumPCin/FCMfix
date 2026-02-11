@@ -32,7 +32,7 @@ public abstract class XposedModule {
 
     protected XC_LoadPackage.LoadPackageParam loadPackageParam;
     public static Set<String> allowList = null;
-    static final String TAG = "FcmFix";
+    static final String TAG = "FCMfix";
     private static final HashMap<String,Object> config = new HashMap<>();
 
     @SuppressLint("StaticFieldLeak")
@@ -77,9 +77,6 @@ public abstract class XposedModule {
         });
     }
 
-    /**
-     * 每个被hook的APP第一次获取到context时调用
-     */
     private static void callAllOnCanReadConfig(){
         initReceiver();
         if("android".equals(getSelfPackageName())){
@@ -119,22 +116,19 @@ public abstract class XposedModule {
             try {
                 context.sendBroadcast(log);
             } catch (Throwable e) {
-                XposedBridge.log("[fcmfix] ["+getSelfPackageName()+"]"+text);
+                XposedBridge.log("[FCMfix] ["+getSelfPackageName()+"]"+text);
             }
         } else {
-            XposedBridge.log("[fcmfix] ["+getSelfPackageName()+"]"+text);
+            XposedBridge.log("[FCMfix] ["+getSelfPackageName()+"]"+text);
         }
     }
 
-    /**
-     * 尝试读取允许的应用列表但列表未初始化时调用
-     */
     protected void checkUserDeviceUnlockAndUpdateConfig(){
         if (context != null && context.getSystemService(UserManager.class).isUserUnlocked()) {
             try {
                 onUpdateConfig();
             } catch (Throwable e) {
-                printLog("更新配置文件失败: " + e.getMessage());
+                printLog("Update configuration file failed: " + e.getMessage());
             }
         }
     }
@@ -196,7 +190,7 @@ public abstract class XposedModule {
                             return;
                         }
                     }catch (Throwable e){
-                        printLog("直接读取应用配置失败，将唤醒fcmfix本体进行读取: " + e.getMessage());
+                        printLog("If app configuration cannot be read directly, FCMfix will be awakened for reading: " + e.getMessage());
                     }
                     try{
                         ContentProviderHelper contentProviderHelper = new ContentProviderHelper(context,"content://com.kooritea.fcmfix.provider/config");
@@ -210,7 +204,7 @@ public abstract class XposedModule {
                         config.put("init", true);
                         contentProviderHelper.close();
                     }catch (Throwable e){
-                        printLog("唤醒fcmfix应用读取配置失败: " + e.getMessage());
+                        printLog("Wake up FCMfix to read the configuration failed: " + e.getMessage());
                     }
                     loadConfigThread = null;
                 }
@@ -221,7 +215,7 @@ public abstract class XposedModule {
 
     private static void onUninstallFcmfix(){
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-        NotificationChannel channel = notificationManager.getNotificationChannel("fcmfix");
+        NotificationChannel channel = notificationManager.getNotificationChannel("FCMfix");
         if(channel != null){
             notificationManager.deleteNotificationChannel(channel.getId());
         }
@@ -267,7 +261,7 @@ public abstract class XposedModule {
                         }
                         onUninstallFcmfix();
                         if("android".equals(getSelfPackageName())){
-                            printLog("Fcmfix已卸载，重启后停止生效。");
+                            printLog("FCMfix uninstalled and will no longer take effect after reboot.");
                         }
                     }
                 }
@@ -287,10 +281,10 @@ public abstract class XposedModule {
     @SuppressLint("MissingPermission")
     protected void sendNotification(String title, String content, PendingIntent pendingIntent ) {
         printLog(title, false);
-        title = "[fcmfix]" + title;
+        title = "[FCMfix]" + title;
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         this.createFcmfixChannel(notificationManager);
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, "fcmfix")
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, "FCMfix")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -302,9 +296,9 @@ public abstract class XposedModule {
     }
 
     protected void createFcmfixChannel(NotificationManagerCompat notificationManager) {
-        if(notificationManager.getNotificationChannel("fcmfix") == null){
-            NotificationChannel channel = new NotificationChannel("fcmfix", "fcmfix", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("[xposed] fcmfix");
+        if(notificationManager.getNotificationChannel("FCMfix") == null){
+            NotificationChannel channel = new NotificationChannel("FCMfix", "FCMfix", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("[xp0sed] FCMfix");
             notificationManager.createNotificationChannel(channel);
         }
     }

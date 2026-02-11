@@ -144,9 +144,9 @@ public class MainActivity extends AppCompatActivity {
             this.mAppList = _allowList;
             if(_allowList.size() == 0 || _allowList.isEmpty() ||(_allowList.size() == 1 && "com.kooritea.fcmfix".equals(_allowList.get(0).packageName))){
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("请在系统设置中授予读取应用列表权限")
-                        .setMessage("或直接编辑" + getApplicationContext().getFilesDir().getAbsolutePath() + "/config.json(需重启生效)")
-                        .setPositiveButton("确定", (dialog, which) -> {})
+                        .setTitle("Grant permission to read the app list in system settings")
+                        .setMessage("or edit directly " + getApplicationContext().getFilesDir().getAbsolutePath() + "/config.json (Requires restart to take effect)")
+                        .setPositiveButton("Sure", (dialog, which) -> {})
                         .show();
             }
         }
@@ -281,23 +281,23 @@ public class MainActivity extends AppCompatActivity {
             this.sendBroadcast(new Intent("com.kooritea.fcmfix.update.config"));
         } catch (IOException | JSONException e) {
             Log.e("updateConfig",e.toString());
-            new AlertDialog.Builder(this).setTitle("更新配置文件失败").setMessage(e.getMessage()).show();
+            new AlertDialog.Builder(this).setTitle("Failed to update configuration file").setMessage(e.getMessage()).show();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu){
-        menu.add("隐藏启动器图标").setCheckable(true);
+        menu.add("Hide FCMfix app icon").setCheckable(true);
 
-        menu.add("阻止应用停止时自动清除通知").setCheckable(true);
+        menu.add("Prevent clean notifications").setCheckable(true);
 
-        menu.add("允许唤醒被冰箱冻结的应用").setCheckable(true);
+        menu.add("Allow to wake up frozen apps").setCheckable(true);
 
-//        menu.add("目标无响应时代发提示通知").setCheckable(true);
+        menu.add("Notify if app no response").setCheckable(true);
 
-        menu.add("全选包含 FCM 的应用");
+        menu.add("Select all apps with FCM");
 
-        menu.add("打开FCM Diagnostics");
+        menu.add("Open FCM diagnostics");
         return true;
     }
 
@@ -306,32 +306,32 @@ public class MainActivity extends AppCompatActivity {
     public final boolean onPrepareOptionsMenu(Menu menu) {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
-            if("隐藏启动器图标".equals(item.getTitle())){
+            if("Hide FCMfix app icon".equals(item.getTitle())){
                 PackageManager packageManager = getPackageManager();
                 item.setChecked(packageManager.getComponentEnabledSetting(new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home")) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
             }
-            if("阻止应用停止时自动清除通知".equals(item.getTitle())){
+            if("Prevent clean notifications".equals(item.getTitle())){
                 try {
                     item.setChecked(this.config.getBoolean("disableAutoCleanNotification"));
                 } catch (JSONException e) {
                     item.setChecked(false);
                 }
             }
-            if("允许唤醒被冰箱冻结的应用".equals(item.getTitle())){
+            if("Allow to wake up frozen apps".equals(item.getTitle())){
                 try {
                     item.setChecked(this.config.getBoolean("includeIceBoxDisableApp"));
                 } catch (JSONException e) {
                     item.setChecked(false);
                 }
             }
-            if("目标无响应时代发提示通知".equals(item.getTitle())){
+            if("Notify if app no response".equals(item.getTitle())){
                 try {
                     item.setChecked(this.config.getBoolean("noResponseNotification"));
                 } catch (JSONException e) {
                     item.setChecked(false);
                 }
             }
-            if("全选包含 FCM 的应用".equals(item.getTitle())){
+            if("Select all apps with FCM".equals(item.getTitle())){
                 item.setOnMenuItemClickListener(menuItem -> {
                     for(AppInfo appInfo : appListAdapter.mAppList){
                         if(appInfo.includeFcm){
@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 });
             }
-            if("打开FCM Diagnostics".equals(item.getTitle())){
+            if("Open FCM diagnostics".equals(item.getTitle())){
                 item.setOnMenuItemClickListener(menuItem -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public final boolean onOptionsItemSelected(MenuItem menuItem) {
-        if(menuItem.getTitle().equals("隐藏启动器图标")){
+        if(menuItem.getTitle().equals("Hide FCMfix app icon")){
             PackageManager packageManager = getPackageManager();
             packageManager.setComponentEnabledSetting(
                     new ComponentName("com.kooritea.fcmfix", "com.kooritea.fcmfix.Home"),
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
                     PackageManager.DONT_KILL_APP
             );
         }
-        if(menuItem.getTitle().equals("阻止应用停止时自动清除通知")){
+        if(menuItem.getTitle().equals("Prevent clean notifications")){
             try {
                 this.config.put("disableAutoCleanNotification", !menuItem.isChecked());
                 this.updateConfig();
@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("onOptionsItemSelected",e.toString());
             }
         }
-        if(menuItem.getTitle().equals("允许唤醒被冰箱冻结的应用")){
+        if(menuItem.getTitle().equals("Allow to wake up frozen apps")){
             try {
                 this.config.put("includeIceBoxDisableApp", !menuItem.isChecked());
                 this.updateConfig();
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("onOptionsItemSelected",e.toString());
             }
         }
-        if(menuItem.getTitle().equals("目标无响应时代发提示通知")){
+        if(menuItem.getTitle().equals("Notify if app no response")){
             try {
                 this.config.put("noResponseNotification", !menuItem.isChecked());
                 this.updateConfig();

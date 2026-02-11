@@ -19,7 +19,7 @@ public class KeepNotification extends XposedModule{
             printLog("No Such Method com.android.server.notification.NotificationManagerService.cancelAllNotificationsInt");
         }
     }
-    
+
     protected void startHook() throws NoSuchMethodError, XposedHelpers.ClassNotFoundError {
         Class<?> clazz = XposedHelpers.findClass("com.android.server.notification.NotificationManagerService",loadPackageParam.classLoader);
         final Method[] declareMethods = clazz.getDeclaredMethods();
