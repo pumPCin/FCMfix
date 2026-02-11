@@ -19,13 +19,12 @@ public class PowerkeeperFix extends XposedModule {
 
     protected void startHook(){
         try {
-
             Class<?> MilletConfig = XposedHelpers.findClassIfExists("com.miui.powerkeeper.millet.MilletConfig", loadPackageParam.classLoader);
             XposedHelpers.setStaticBooleanField(MilletConfig, "isGlobal", true);
             printLog("Set com.miui.powerkeeper.millet.MilletConfig.isGlobal to true");
 
             Class<?> Misc = XposedHelpers.findClassIfExists("com.miui.powerkeeper.provider.SimpleSettings.Misc", loadPackageParam.classLoader);
-            printLog("[fcmfix] start hook com.miui.powerkeeper.provider.SimpleSettings.Misc.getBoolean");
+            printLog("[FCMfix] start h00k com.miui.powerkeeper.provider.SimpleSettings.Misc.getBoolean");
             XposedUtils.findAndHookMethod(Misc, "getBoolean", 3, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
@@ -83,7 +82,7 @@ public class PowerkeeperFix extends XposedModule {
 
                 }
             };
-            printLog("[fcmfix] start hook com.miui.powerkeeper.millet.MilletPolicy constructor");
+            printLog("[FCMfix] start h00k com.miui.powerkeeper.millet.MilletPolicy constructor");
             XposedHelpers.findAndHookConstructor(MilletPolicy, new Object[] {Context.class, methodHook});
 
         } catch (XposedHelpers.ClassNotFoundError | NoSuchMethodError  e){
