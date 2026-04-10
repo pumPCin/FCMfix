@@ -28,13 +28,8 @@ public class BroadcastFix extends XposedModule {
         try{
             this.startHookBroadcastIntentLocked();
         }catch (Throwable e) {
-            printLog("hook error broadcastIntentLocked:" + e.getMessage());
+            printLog("h00k error broadcastIntentLocked:" + e.getMessage());
         }
-//        try{
-//            this.startHookScheduleResultTo();
-//        }catch (Throwable e) {
-//            printLog("hook error com.android.server.am.BroadcastQueueModernImpl.scheduleResultTo:" + e.getMessage());
-//        }
     }
 
     protected void startHookBroadcastIntentLocked(){
@@ -99,7 +94,6 @@ public class BroadcastFix extends XposedModule {
                 if(intent_args_index == 0 || appOp_args_index == 0){
                     intent_args_index = 0;
                     appOp_args_index = 0;
-                    // 根据参数名称查找，部分经过混淆的系统无效
                     for(int i = 0; i < parameters.length; i++){
                         if("appOp".equals(parameters[i].getName()) && parameters[i].getType() == int.class){
                             appOp_args_index = i;
@@ -114,7 +108,7 @@ public class BroadcastFix extends XposedModule {
         if(targetMethod != null && intent_args_index != 0 & appOp_args_index != 0 && targetMethod.getParameters()[intent_args_index].getType() == Intent.class && targetMethod.getParameters()[appOp_args_index].getType() == int.class){
             createBroadcastIntentLockedHooker(intent_args_index,appOp_args_index,targetMethod);
         } else {
-            printLog("broadcastIntentLocked hook 位置查找失败，fcmfix将不会工作。");
+            printLog("broadcastIntentLocked h00k location lookup fails, FCMfix will not work.");
         }
     }
 
@@ -122,7 +116,7 @@ public class BroadcastFix extends XposedModule {
         printLog("Android API: " + Build.VERSION.SDK_INT);
         printLog("appOp_args_index: " + appOp_args_index);
         printLog("intent_args_index: " + intent_args_index);
-        printLog("hook target: " + method.getDeclaringClass().getName());
+        printLog("h00k target: " + method.getDeclaringClass().getName());
         final int finalIntent_args_index = intent_args_index;
         final int finalAppOp_args_index = appOp_args_index;
 
@@ -136,7 +130,6 @@ public class BroadcastFix extends XposedModule {
                     return;
                 }
                 Intent intent = (Intent) methodHookParam.args[finalIntent_args_index];
-                // 介入条件：Intent未包含唤醒停止的pkg 且 Intent是FCM
                 if((intent.getFlags() & Intent.FLAG_INCLUDE_STOPPED_PACKAGES) == 0 && isFCMIntent(intent)){
                     String target;
                     if (intent.getComponent() != null) {
@@ -211,7 +204,7 @@ public class BroadcastFix extends XposedModule {
                                     context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
                             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
                             createFcmfixChannel(notificationManager);
-                            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, "fcmfix")
+                            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, "FCMfix")
                                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                                     .setContentTitle("FCM Message")
                                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
@@ -222,7 +215,7 @@ public class BroadcastFix extends XposedModule {
                             notification.setContentIntent(pendingIntent).setAutoCancel(true);
                             notificationManager.notify((int) System.currentTimeMillis(), notification.build());
                         }else{
-                            printLog("无法获取目标应用active: " + packageName,false);
+                            printLog("Unable to obtain target app active: " + packageName,false);
                         }
                     }catch (Throwable e){
                         printLog(e.getMessage(),false);
