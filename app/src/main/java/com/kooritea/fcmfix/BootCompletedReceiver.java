@@ -8,6 +8,6 @@ import android.util.Log;
 public class BootCompletedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("fcmfix", "waiting load config");
+        Log.i("FCMfix", "waiting load config");
     }
 }
