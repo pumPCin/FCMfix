@@ -21,30 +21,23 @@ public class OplusProxyFix extends XposedModule {
             this.startHookOplusProxyWakeLock();
             this.startHookOplusProxyBroadcast();
         }catch(Throwable e) {
-            printLog("hook error OplusProxy:" + e.getMessage());
+            printLog("h00k error OplusProxy:" + e.getMessage());
         }
         try {
-            this.startHookRegisterGmsRestrictObserver(); // 阻止Hans监听GMS状态更新
+            this.startHookRegisterGmsRestrictObserver();
         } catch (Throwable e) {
-            printLog("hook error registerGmsRestrictObserver:" + e.getMessage());
+            printLog("h00k error registerGmsRestrictObserver:" + e.getMessage());
         }
         try {
-            this.startHookUpdateGmsRestrict(); // 拦截Hans更新GMS限制状态
+            this.startHookUpdateGmsRestrict();
         } catch (Throwable e) {
-            printLog("hook error updateGmsRestrict:" + e.getMessage());
+            printLog("h00k error updateGmsRestrict:" + e.getMessage());
         }
         try {
-            this.startHookIsGoogleRestricInfoOn(); // 阻止判断GMS限制
+            this.startHookIsGoogleRestricInfoOn();
         } catch (Throwable e) {
-            printLog("hook error isGoogleRestricInfoOn:" + e.getMessage());
+            printLog("h00k error isGoogleRestricInfoOn:" + e.getMessage());
         }
-        /*
-        try {
-            this.startHookIsGmsApp(); // 阻止Hans对GMS进行特殊处理
-        } catch (Throwable e) {
-            printLog("hook error isGmsApp:" + e.getMessage());
-        }
-        */
     }
 
     private void startHookOplusProxyBroadcast() throws Exception {
@@ -52,19 +45,6 @@ public class OplusProxyFix extends XposedModule {
         Class<?> resultEnum = XposedHelpers.findClass("com.android.server.am.OplusProxyBroadcast$RESULT", classLoader);
         Object notIncludeValue = XposedHelpers.getStaticObjectField(resultEnum, "NOT_INCLUDE");
         Object proxyValue = XposedHelpers.getStaticObjectField(resultEnum, "PROXY");
-
-        /*
-        XXX only tested on OnePlus13T ColorOS 15
-        private RESULT shouldProxy( 8 args
-            00 Intent intent,
-            01 int callingPid,
-            02 int callingUid,
-            03 String callingPkg,
-            04 int uid,
-            05 String pkgName,
-            06 String action,
-            07 int appType) {
-         */
 
         XposedUtils.findAndHookMethod(oplusProxyBroadcastClass, "shouldProxy", 8, new XC_MethodHook() {
             @Override
@@ -121,14 +101,6 @@ public class OplusProxyFix extends XposedModule {
             return;
         }
 
-        /*
-        XXX only tested on OnePlus13T ColorOS 15
-        unfreezeIfNeed: 3 args
-            00 int uid,
-            01 WorkSource ws,
-            02 String tag
-         */
-
         WorkSource ws = new WorkSource();
         String tag = "FCMXX";
 
@@ -137,13 +109,11 @@ public class OplusProxyFix extends XposedModule {
                 XposedHelpers.callMethod(s_oplusProxyWakeLock, "unfreezeIfNeed", uid, ws, tag, "FCMFix");
                 s_useFourParams = true;
             } catch (Throwable e) {
-                // 降级用3参
                 XposedHelpers.callMethod(s_oplusProxyWakeLock, "unfreezeIfNeed", uid, ws, tag);
                 s_useFourParams = false;
             }
             s_signatureDetected = true;
         } else {
-            // 后续调用直接用缓存的
             try {
                 if (s_useFourParams) {
                     XposedHelpers.callMethod(s_oplusProxyWakeLock, "unfreezeIfNeed", uid, ws, tag, "FCMFix");
@@ -153,7 +123,6 @@ public class OplusProxyFix extends XposedModule {
                     printLog("unfreeze " + target + ", uid=" + uid);
                 }
             } catch (Throwable ignored) {
-                // 静默或log
             }
         }
     }

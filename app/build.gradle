@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace = "com.kooritea.fcmfix"
-    compileSdkVersion 36
+    compileSdkVersion 37
 
     defaultConfig {
         applicationId "com.kooritea.fcmfix"
@@ -21,8 +21,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     lint {
@@ -31,9 +31,9 @@ android {
 }
 
 dependencies {
-    compileOnly 'io.github.libxposed:api:101.0.1'
-    implementation 'io.github.libxposed:interface:101.0.0'
-    implementation 'io.github.libxposed:service:101.0.0'
+    compileOnly 'io.github.libxposed:api:102.0.0'
+    implementation 'io.github.libxposed:interface:102.0.0'
+    implementation 'io.github.libxposed:service:102.0.0'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
